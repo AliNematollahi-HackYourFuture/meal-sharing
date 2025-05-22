@@ -1,10 +1,12 @@
 import express from 'express';
-import router from './routes.js';
+import mealsRouter from './routers/meals.js';
+import reservationsRouter from './routers/reservations.js';
 
 const app = express();
 app.use(express.json());
 
-app.use('/',router)
+app.use('/api',mealsRouter)
+app.use('/api',reservationsRouter)
 
 const PORT = 3000;
 
