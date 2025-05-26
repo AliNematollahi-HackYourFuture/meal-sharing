@@ -125,8 +125,14 @@ mealsRouter.post("/meals", async (req, res) => {
 mealsRouter.get("/meals/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const meal = await db("meals").select("*").where({ id });
-    res.json(meal);
+    if (!IsNan(id) && id > 0) {
+      const meal = await db("meals").select("*").where({ id });
+      res.json(meal);
+    } else {
+      return res.status(400).json({
+        error: "Invalid ID. ID must be a positive integer greater than 0.",
+      });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send("Error fetching all meals");
@@ -139,13 +145,19 @@ mealsRouter.put("/meals/:id", async (req, res) => {
   const updateData = req.body;
 
   try {
-    const meal = await db("meals").select("*").where({ id });
-    if (!meal) {
-      return res.status(404).json({ error: "Meal not found" });
-    }
+    if (!IsNan(id) && id > 0) {
+      const meal = await db("meals").select("*").where({ id });
+      if (!meal) {
+        return res.status(404).json({ error: "Meal not found" });
+      }
 
-    await db("meals").where({ id }).update(updateData);
-    res.json({ message: "Meal updated successfully" });
+      await db("meals").where({ id }).update(updateData);
+      res.json({ message: "Meal updated successfully" });
+    } else {
+      return res.status(400).json({
+        error: "Invalid ID. ID must be a positive integer greater than 0.",
+      });
+    }
   } catch (err) {
     console.error("Error updating meal:", err);
     res.status(500).send("Error updating meal");
@@ -157,13 +169,19 @@ mealsRouter.delete("/meals/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const meal = await db("meals").select("*").where({ id });
-    if (!meal) {
-      return res.status(404).json({ error: "Meal not found" });
-    }
+    if (!IsNan(id) && id > 0) {
+      const meal = await db("meals").select("*").where({ id });
+      if (!meal) {
+        return res.status(404).json({ error: "Meal not found" });
+      }
 
-    await db("meals").where({ id }).del();
-    res.json({ message: "Meal deleted successfully" });
+      await db("meals").where({ id }).del();
+      res.json({ message: "Meal deleted successfully" });
+    } else {
+      return res.status(400).json({
+        error: "Invalid ID. ID must be a positive integer greater than 0.",
+      });
+    }
   } catch (err) {
     console.error("Error deleting meal:", err);
     res.status(500).send("Error deleting meal");
