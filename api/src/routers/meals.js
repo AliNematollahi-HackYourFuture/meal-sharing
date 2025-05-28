@@ -67,8 +67,117 @@ mealsRouter.get("/last-meal", async (req, res) => {
 // Get /meals
 mealsRouter.get("/meals", async (req, res) => {
   try {
-    const meals = await db("meals").select("*");
-    res.json(meals);
+    if ("maxPrice" in req.query) {
+      const maxPrice = req.query.maxPrice;
+
+      if (!isNaN(maxPrice) && maxPrice > 0) {
+        const limitedPriceMeals = await db("meals")
+          .select("*")
+          .where("price", "<", maxPrice);
+        res.json(limitedPriceMeals);
+        return;
+      }
+    } else if ("availableReservations" in req.query) {
+      const availableReservations =
+        req.query.availableReservations.toLowerCase();
+
+      if (availableReservations === "true") {
+        const availableReservationsMeals = await db("meals")
+          .leftJoin("reservations", "meals.id", "reservations.meal_id")
+          .groupBy("meals.id")
+          .select("meals.*")
+          .havingRaw("meals.max_reservations > COUNT(reservations.id)");
+
+        res.json(availableReservationsMeals);
+        return;
+      } else if (availableReservations === "false") {
+        const unAvailableReservationsMeals = await db("meals")
+          .leftJoin("reservations", "meals.id", "reservations.meal_id")
+          .groupBy("meals.id")
+          .select("meals.*")
+          .havingRaw("meals.max_reservations <= COUNT(reservations.id)");
+
+        res.json(unAvailableReservationsMeals);
+        return;
+      }
+    } else if ("title" in req.query) {
+      const title = req.query.title.toString().toLowerCase();
+
+      if (title) {
+        const meals = await db("meals")
+          .select("*")
+          .where("title", "like", `%${title}%`);
+
+        res.json(meals);
+        return;
+      }
+    } else if ("dateAfter" in req.query) {
+      const dateAfter = new Date(req.query.dateAfter.toString());
+
+      if (dateAfter == "Invalid Date") {
+        res.status(400).json({ error: "Invalid date format" });
+      } else if (dateAfter instanceof Date) {
+        const meals = await db("meals")
+          .select("*")
+          .where("when_date", ">", dateAfter);
+
+        res.json(meals);
+        return;
+      }
+    } else if ("dateBefore" in req.query) {
+      const dateBefore = new Date(req.query.dateBefore.toString());
+
+      if (dateBefore == "Invalid Date") {
+        res.status(400).json({ error: "Invalid date format" });
+      } else if (dateBefore instanceof Date) {
+        const meals = await db("meals")
+          .select("*")
+          .where("when_date", ">", dateBefore);
+
+        res.json(meals);
+        return;
+      }
+    } else if ("limit" in req.query) {
+      const limit = Number(req.query.limit);
+      if (Number.isInteger(limit) && limit > 0) {
+        const meals = await db("meals").limit(limit);
+
+        res.json(meals);
+        return;
+      }
+    } else if ("sortKey" in req.query) {
+      const sortKey = req.query.sortKey.toLowerCase();
+      let sortDirection;
+      if ("sortDir" in req.query) {
+        const sortDir = req.query.sortDir.toLowerCase();
+        sortDir === "asc" || sortDir === "desc"
+          ? (sortDirection = sortDir)
+          : (sortDirection = "asc");
+      } else {
+        sortDirection = "asc";
+      }
+
+      if (sortKey === "when") {
+        const meals = await db("meals")
+          .select("*")
+          .orderBy("when_date", sortDirection);
+
+        res.json(meals);
+        return;
+      } else if (sortKey === "max_reservations" || sortKey === "price") {
+        const meals = await db("meals")
+          .select("*")
+          .orderBy(sortKey, sortDirection);
+
+        res.json(meals);
+        return;
+      } else {
+        res.status(400).json({ error: "Invalid Sort Key" });
+      }
+    } else {
+      const meals = await db("meals").select("*");
+      res.json(meals);
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send("Error fetching all meals");
