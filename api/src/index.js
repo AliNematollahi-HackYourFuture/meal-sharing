@@ -1,6 +1,7 @@
 import express from 'express';
 import mealsRouter from './routers/meals.js';
 import reservationsRouter from './routers/reservations.js';
+import reviewsRouter from './routers/reviews.js';
 import cors from 'cors';
 
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use('/api',mealsRouter)
 app.use('/api',reservationsRouter)
+app.use('/api',reviewsRouter)
 
 const PORT = 8000;
 
