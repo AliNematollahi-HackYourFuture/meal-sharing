@@ -1,5 +1,11 @@
 'use client'
 import MealsList from './components/MealsList ';
 export default function Home() {
-  return <MealsList />;
+  return(
+    
+    <>
+    <h1>Meal Sharing APP</h1>
+    <MealsList numberOfItemsToShow={3}/>
+    </>
+    );
 }

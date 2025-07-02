@@ -60,7 +60,7 @@ reservationsRouter.post("/reservations", async (req, res) => {
 reservationsRouter.get("/reservations/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const reservation = await db("reservations").select("*").where({ id });
       res.json(reservation);
     } else {
@@ -80,7 +80,7 @@ reservationsRouter.put("/reservations/:id", async (req, res) => {
   const updateData = req.body;
 
   try {
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const reservation = await db("reservations").select("*").where({ id });
       if (!reservation) {
         return res.status(404).json({ error: "reservation not found" });
@@ -104,7 +104,7 @@ reservationsRouter.delete("/reservations/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const reservation = await db("reservations").select("*").where({ id });
       if (!reservation) {
         return res.status(404).json({ error: "reservation not found" });

@@ -19,14 +19,12 @@ const Item = styled(Paper)(({ theme }) => ({
   }),
 }));
 
-export default function MealsList() {
+export default function MealsList({ numberOfItemsToShow }) {
   const [meals, setMeals] = useState([]);
 
   useEffect(() => {
     const handleData = async () => {
-      const response = await fetch(
-        "http://localhost:8000/api/meals"
-      );
+      const response = await fetch("http://localhost:8000/api/meals");
 
       const res = await response.json();
       setMeals(res);
@@ -42,6 +40,10 @@ export default function MealsList() {
         columns={{ xs: 4, sm: 8, md: 12 }}
       >
         {meals.map((meal, index) => {
+          if (numberOfItemsToShow && index >= numberOfItemsToShow) {
+            return null;
+          }
+
           return (
             <Grid key={index} size={{ xs: 2, sm: 4, md: 4 }}>
               <Item>

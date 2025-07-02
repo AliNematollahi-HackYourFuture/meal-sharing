@@ -124,8 +124,8 @@ mealsRouter.post("/meals", async (req, res) => {
 // Get /meals/:id
 mealsRouter.get("/meals/:id", async (req, res) => {
   try {
-    const id = req.params.id;
-    if (!IsNan(id) && id > 0) {
+    const id = Number(req.params.id);
+    if (!isNaN(id) && id > 0) {
       const meal = await db("meals").select("*").where({ id });
       res.json(meal);
     } else {
@@ -145,7 +145,7 @@ mealsRouter.put("/meals/:id", async (req, res) => {
   const updateData = req.body;
 
   try {
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const meal = await db("meals").select("*").where({ id });
       if (!meal) {
         return res.status(404).json({ error: "Meal not found" });
@@ -169,7 +169,7 @@ mealsRouter.delete("/meals/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const meal = await db("meals").select("*").where({ id });
       if (!meal) {
         return res.status(404).json({ error: "Meal not found" });
