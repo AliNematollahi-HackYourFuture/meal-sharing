@@ -6,15 +6,17 @@ import Meal from "./Meal";
 export default function ShowMealById({ id }) {
   const [meal, setMeal] = useState();
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const getMealById = async () => {
+    const response = await fetch(`${apiUrl}/api/meals/${id}`);
+
+    const res = await response.json();
+    setMeal(res);
+  };
+
   useEffect(() => {
-    const handleData = async () => {
-      const response = await fetch(`http://localhost:8000/api/meals/${id}`);
-
-      const res = await response.json();
-      setMeal(res);
-    };
-
-    handleData();
+    getMealById();
   }, []);
   return (
     <>

@@ -22,15 +22,18 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function MealsList({ numberOfItemsToShow }) {
   const [meals, setMeals] = useState([]);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
+  const getAllMeals = async () => {
+    const response = await fetch(`${apiUrl}/api/meals`);
+
+    const res = await response.json();
+    setMeals(res);
+  };
+
   useEffect(() => {
-    const handleData = async () => {
-      const response = await fetch("http://localhost:8000/api/meals");
-
-      const res = await response.json();
-      setMeals(res);
-    };
-
-    handleData();
+    getAllMeals();
   }, []);
   return (
     <Box sx={{ flexGrow: 1 }}>
