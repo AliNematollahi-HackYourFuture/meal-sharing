@@ -19,7 +19,7 @@ reviewsRouter.get("/meals/:meal_id/reviews", async (req, res) => {
   try {
     const mealId = req.params.meal_id;
 
-    if (!IsNan(mealId) && mealId > 0) {
+    if (!isNaN(mealId) && mealId > 0) {
       const review = await db("reviews").select("*").where({ meal_id: mealId });
       res.json(review);
     } else {
@@ -64,7 +64,7 @@ reviewsRouter.post("/reviews", async (req, res) => {
 reviewsRouter.get("/reviews/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const review = await db("reviews").select("*").where({ id });
       res.json(review);
     } else {
@@ -84,7 +84,7 @@ reviewsRouter.put("/reviews/:id", async (req, res) => {
   const updateData = req.body;
 
   try {
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const review = await db("reviews").select("*").where({ id });
       if (!review) {
         return res.status(404).json({ error: "review not found" });
@@ -108,7 +108,7 @@ reviewsRouter.delete("/reviews/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    if (!IsNan(id) && id > 0) {
+    if (!isNaN(id) && id > 0) {
       const review = await db("reviews").select("*").where({ id });
       if (!review) {
         return res.status(404).json({ error: "review not found" });
