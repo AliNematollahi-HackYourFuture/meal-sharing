@@ -8,7 +8,7 @@ export default function Meal({
   available,
   whenDate,
 }) {
-  const imageUrl = `/images/${id}.AVIF`;
+  const imageUrl = `/images/${id}.avif`;
 
   return (
     <div className="meal-card">
