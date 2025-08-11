@@ -15,10 +15,12 @@ export async function SubmitReviewForm(formData) {
     stars: stars,
   };
 
-  console.log('reviewData',reviewData)
+  console.log("reviewData", reviewData);
 
   try {
-    const response = await fetch("http://localhost:8000/api/reviews", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    const response = await fetch(`${apiUrl}/api/reviews`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,9 +40,11 @@ export async function SubmitReviewForm(formData) {
     }
 
     return { success: true, message: data.message };
-
   } catch (error) {
     console.error("Error sending review:", error);
-    return { success: false, message: error.message || "Failed to connect to server" };
+    return {
+      success: false,
+      message: error.message || "Failed to connect to server",
+    };
   }
 }
