@@ -210,19 +210,21 @@ mealsRouter.post("/meals", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const [id] = await db("meals").insert({
-      title,
-      description,
-      location,
-      when_date,
-      max_reservations,
-      price,
-      created_date,
-    });
+    const [meal] = await db("meals")
+      .insert({
+        title,
+        description,
+        location,
+        when_date,
+        max_reservations,
+        price,
+        created_date,
+      })
+      .returning("id"); // This works for PostgreSQL
 
     res.status(201).json({
       message: "Meal added successfully",
-      mealId: id,
+      mealId: meal.id,
     });
   } catch (err) {
     console.error("Error adding meal:", err);
@@ -320,6 +322,5 @@ mealsRouter.get("/limited-meals/:limit", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 export default mealsRouter;
