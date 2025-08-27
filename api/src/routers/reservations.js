@@ -37,17 +37,21 @@ reservationsRouter.post("/reservations", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const [id] = await db("reservations").insert({
-      number_of_guests,
-      meal_id,
-      created_date,
-      contact_phonenumber,
-      contact_name,
-      contact_email,
-    });
+    const inserted = await db("reservations")
+      .insert({
+        number_of_guests,
+        meal_id,
+        created_date,
+        contact_phonenumber,
+        contact_name,
+        contact_email,
+      })
+      .returning("id"); // required for PostgreSQL
+
+    const id = inserted[0].id;
 
     res.status(201).json({
-      message: "reservation added successfully",
+      message: "Reservation added successfully",
       reservationId: id,
     });
   } catch (err) {

@@ -42,13 +42,16 @@ reviewsRouter.post("/reviews", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const [id] = await db("reviews").insert({
-      title,
-      description,
-      stars,
-      meal_id,
-      created_date,
-    });
+    const [id] = await db("reviews")
+  .insert({
+    title,
+    description,
+    stars,
+    meal_id,
+    created_date,
+  })
+  .returning("id"); // PostgreSQL requirement
+
 
     res.status(201).json({
       message: "review added successfully",

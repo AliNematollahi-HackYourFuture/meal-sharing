@@ -210,19 +210,21 @@ mealsRouter.post("/meals", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const [id] = await db("meals").insert({
-      title,
-      description,
-      location,
-      when_date,
-      max_reservations,
-      price,
-      created_date,
-    });
+    const [meal] = await db("meals")
+      .insert({
+        title,
+        description,
+        location,
+        when_date,
+        max_reservations,
+        price,
+        created_date,
+      })
+      .returning("id"); // This works for PostgreSQL
 
     res.status(201).json({
       message: "Meal added successfully",
-      mealId: id,
+      mealId: meal.id,
     });
   } catch (err) {
     console.error("Error adding meal:", err);
@@ -294,6 +296,30 @@ mealsRouter.delete("/meals/:id", async (req, res) => {
   } catch (err) {
     console.error("Error deleting meal:", err);
     res.status(500).send("Error deleting meal");
+  }
+});
+
+// GET /limited-meals/:limit
+mealsRouter.get("/limited-meals/:limit", async (req, res) => {
+  const { limit } = req.params;
+
+  // Convert limit to number and validate it
+  const limitNumber = parseInt(limit, 10);
+
+  if (isNaN(limitNumber) || limitNumber <= 0) {
+    return res.status(400).json({ error: "Limit must be a positive number" });
+  }
+
+  try {
+    const meals = await db("meals")
+      .select("*")
+      .orderBy("id", "asc")
+      .limit(limitNumber);
+
+    res.json(meals);
+  } catch (error) {
+    console.error("Error fetching limited meals:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
